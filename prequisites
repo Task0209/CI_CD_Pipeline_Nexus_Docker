@@ -1,0 +1,17 @@
+https://bhairavisanskriti.hashnode.dev/publish-docker-images-to-nexus-using-jenkins
+
+We need to add the below entry of Nexus-docker-repo {"insecure-registries": ["192.168.0.93:8082"]} in below file 
+
+root@jenkins:~# cat /etc/docker/daemon.json
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2",
+  "insecure-registries": ["192.168.0.93:8082"]
+}
+root@jenkins:~#
+
+Please sure to create the Repository, Blob, Role & User, Once created the user with password, kindly store that credentials in jenkins dashboard
