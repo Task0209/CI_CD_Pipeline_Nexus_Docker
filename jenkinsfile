@@ -16,7 +16,7 @@ node {
         
     }
     
-    stage('Stage 4: Pushing image to docker hosted rerpository on Nexus') {
+    stage('Stage 4: Pushing Docker Image to Nexus Repository Manager') {
         withCredentials([usernamePassword(credentialsId: 'nexus', passwordVariable: 'NexusPass', usernameVariable: 'NexusUser')]) {
            sh "echo ${NexusPass} | docker login -u ${NexusUser} --password-stdin 192.168.0.93:8082"
            sh "docker push 192.168.0.93:8082/chillapp:${BUILD_NUMBER}"
