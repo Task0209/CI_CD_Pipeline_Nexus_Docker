@@ -22,8 +22,11 @@ apiVersion: v1
 clusters:
 - cluster:
     certificate-authority-data: LSuperLongBase64EncodedString
+    
 Decode it to get the X509 certificate:
+
 echo LSuperLongBase64EncodedString | base64 -D > ca.crt
+
 Your output should be similar to the following example:
 
 cat ca.crt
@@ -52,6 +55,16 @@ Then go to Manage jenkins --> Manage Nodes & Cloud --> Select Kubernetes, Fill t
 Certificate by click add --> Select X509 certificate and fill the ca.crt, client.crt & client.key and click submit
 
 ================================================================================================================================
+In case of Minikube cluster, we will follow below steps
+-----------------------------------------------------------
+
+cat /home/vagrant/.minikube/ca.crt | base64 -w 0; echo
+
+then 
+
+echo LSuperLongBase64EncodedString | base64 -D > ca.crt 
+
+So we have to follow the samething for client.crt & client.key
 
 Use the Pipeline script from Deployment Branch
 
