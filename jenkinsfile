@@ -1,26 +1,41 @@
-node {     
-    
-    stage('Stage 1: checkout') {
-        git credentialsId: 'github', url: 'https://github.com/Task0209/chillapp.git'
-    } 
-    
-    stage('Stage 2: Build the Docker Image') {
-            
-        sh 'whoami'
-        sh "docker build -t 192.168.0.93:8082/chillapp:${BUILD_NUMBER} . "
-    }
-    
-    stage('Stage 3: Validate the docker image') {
-        
-        sh 'docker images '
-        
-    }
-    
-    stage('Stage 4: Pushing Docker Image to Nexus Repository Manager') {
-        withCredentials([usernamePassword(credentialsId: 'nexus', passwordVariable: 'NexusPass', usernameVariable: 'NexusUser')]) {
-           sh "echo ${NexusPass} | docker login -u ${NexusUser} --password-stdin 192.168.0.93:8082"
-           sh "docker push 192.168.0.93:8082/chillapp:${BUILD_NUMBER}"
-         }
-        
+pipeline {
+    agent any 
+    stages{
+         
+         stage('Stage 1: Cloning Repo') {
+            steps{
+                git credentialsId: 'github', url: 'https://github.com/Task0209/chillapp.git'
+            }
         }
+         
+         stage('Stage 2: Install & Download Kubectl') {
+            steps{
+                sh 'curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"'  
+                    sh 'chmod u+x ./kubectl'
+                    sh 'chmod u+x ./deploy.yaml'
+                    sh 'chmod u+x ./service.yaml'
+            }
+         }
+    
+         stage('Stage 3: Pull the Docker Image from Nexus Repository Manager') {
+             steps{
+                 withCredentials([usernamePassword(credentialsId: 'nexus', passwordVariable: 'NexusPass', usernameVariable: 'NexusUser')]) {
+                       sh "echo ${NexusPass} | docker login -u ${NexusUser} --password-stdin 192.168.0.53:8082"
+                       sh "docker pull 192.168.0.53:8082/chillapp:v1"
+             }
+         }
+      
+       }
+    
+        stage ('Stage 4: Deploying to K8s Cluster'){
+             steps {
+                 script {
+                      withKubeConfig(credentialsId: 'kkk', serverUrl: 'https://192.168.0.50:6443') {
+                                  sh './kubectl create -f deploy.yaml'
+                                  sh './kubectl create -f service.yaml'
+                                 }
+                  }
+             }
+           }
     }
+}
