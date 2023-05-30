@@ -15,3 +15,44 @@ root@jenkins:~# cat /etc/docker/daemon.json
 root@jenkins:~#
 
 Please sure to create the Repository, Blob, Role & User, Once created the user with password, kindly store that credentials in jenkins dashboard
+Integrate Kubernetes with Jenkins by following steps
+Go to Master Node and view the ~.kube/config file
+Retrieve the cluster: certificate-authority-data
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: LSuperLongBase64EncodedString
+Decode it to get the X509 certificate:
+echo LSuperLongBase64EncodedString | base64 -D > ca.crt
+Your output should be similar to the following example:
+
+cat ca.crt
+
+-----BEGIN CERTIFICATE-----
+MIIAnotherSuperLongSeritificateValueString
+-----END CERTIFICATE----
+
+Copy and paste the content of the ca.crt file into the Kubernetes server certificate. Make sure you add full content, including -----BEGIN CERTIFICATE----- and -----END CERTIFICATE----- lines
+
+Simillarly you should retrieve the base64 encoded client-certificate-data and client-key-data
+
+Using the same step as with ca.crt you can decode and create:
+– client.crt with client-certificate-data
+
+echo LSuperLongBase64EncodedString | base64 -D > client.crt
+– client.key with client-key-data
+
+echo LAnotherSuperLongBase64EncodedString | base64 -D > client.key
+
+===============================================================================================================================
+
+Make sure to install Kubernetes Plugin in Jenkins
+
+Then go to Manage jenkins --> Manage Nodes & Cloud --> Select Kubernetes, Fill the Server certificate , Kubernetes server URL , Name space, Create the
+Certificate by click add --> Select X509 certificate and fill the ca.crt, client.crt & client.key and click submit
+
+================================================================================================================================
+
+Use the Pipeline script from Deployment Branch
+
+
