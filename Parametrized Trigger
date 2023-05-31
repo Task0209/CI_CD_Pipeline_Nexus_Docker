@@ -1,0 +1,3 @@
+Need to install Parametrized Trigger Plugin in Jenkins
+Job(Build_Pipeline) ==> Build Triggers --> Build after other projects are built --> Projects to watch ==> Enter the Another Job (Deploy_Pipeline)
+Job(Deploy_Pipeline) ==> This project is parameterized --> BUILD_number
